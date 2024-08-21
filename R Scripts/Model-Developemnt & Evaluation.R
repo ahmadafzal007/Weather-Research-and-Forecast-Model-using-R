@@ -52,7 +52,7 @@ if (all(na_summary == 0)) {
 # View the cleaned data
 print(head(data))
 
-#------------------------------------------------------
+D#------------------------------------------------------
 
 
 
@@ -159,8 +159,7 @@ lm_preds <- predict(lm_model, testData)
 # Re-run the prediction and evaluation
 lm_preds_clean <- predict(lm_model, testData)
 lm_rmse_clean <- sqrt(mean((lm_preds - testData$TSK)^2))
-cat("Linear Regression RMSE (after removing problematic rows):", lm_rmse_clean, "\n")
-
+cat("Linear Regression RMSE :", lm_rmse_clean, "\n")
 
 
 
@@ -169,15 +168,9 @@ cat("Linear Regression RMSE (after removing problematic rows):", lm_rmse_clean, 
 # Train a Random Forest model
 rf_model <- randomForest(TSK ~ U10 + V10 + Q2 + RAINC + RAINNC + PSFC + SMOIS, data = trainData, ntree = 100)
 
-# Check for NA values in the actual TSK values
-any(is.na(testData$TSK))
+# Generate predictions on the test data
 
-# Check for NA values in the predicted values
-any(is.na(rf_preds))
-
-# Optionally, count the number of NA values
-sum(is.na(testData$TSK))
-sum(is.na(rf_preds))
+rf_preds <- predict(rf_model, testData)
 
 
 # Remove NA values from predictions and actual values

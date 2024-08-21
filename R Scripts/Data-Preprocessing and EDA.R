@@ -1,6 +1,6 @@
 # Load the dplyr package
 library(dplyr)
-library(readr)  # For read_csv function
+library(readr)  
 library(ggplot2)
 library(corrplot)
 library(here)
@@ -14,6 +14,33 @@ colnames(data) <- as.character(data[2, ])
 
 # Step 3: Remove the second row from the data (to avoid duplication in the rows)
 data <- data[-2, ]
+
+
+
+
+# Initial EDA: Overview of the dataset
+print(dim(data))  # Dimensions of the dataset
+print(str(data))  # Structure of the dataset
+print(summary(data))  # Summary statistics for each column
+
+# Missing data analysis
+missing_data_summary <- colSums(is.na(data))
+print(missing_data_summary)
+
+# Visualize missing data distribution
+missing_data_plot <- data.frame(Variable = names(missing_data_summary), 
+                                Missing_Count = missing_data_summary) %>%
+  ggplot(aes(x = reorder(Variable, -Missing_Count), y = Missing_Count)) +
+  geom_bar(stat = "identity", fill = "tomato") +
+  coord_flip() +
+  labs(title = "Missing Data Summary", x = "Variables", y = "Count of Missing Values") +
+  theme_minimal()
+
+print(missing_data_plot)
+
+
+
+
 
 
 print(head(data))
@@ -71,13 +98,6 @@ print(head(data_cleaned))
 
 
 df <- read_csv("C:/Users/Ahmad Afzal/Desktop/cleaned_file.csv")
-
-
-
-print(colnames(df))
-
-
-
 
 
 # Assuming your dataset is named 'df'
@@ -168,9 +188,6 @@ print(head(data_without_coordinates))
 #----------------------------------------------------------------------------
 
 new_data <- read_csv("C:/Users/Ahmad Afzal/Desktop/Scotland_WRFdata_Without_Coordinates.csv")
-head(new_data)
-
-
 
 
 
@@ -205,6 +222,11 @@ fill_na_with_mean <- function(x) {
 }
 print(colnames(newdata_copy))
 
+
+
+
+
+
 newdata_copy[numeric_cols] <- lapply(newdata_copy[numeric_cols], fill_na_with_mean)
 
 # Convert 'DATETIME' to POSIXct format
@@ -235,15 +257,7 @@ for (var in numeric_vars) {
   )
 }
 
-# Explore data distribution with boxplots and identify outliers
-for (var in numeric_vars) {
-  print(
-    ggplot(newdata_copy, aes_string(x = var)) +
-      geom_boxplot() +
-      labs(title = paste("Boxplot of", var), x = var, y = "") +
-      theme_bw()
-  )
-}
+
 
 # Identify outliers with z-scores (more than 3 standard deviations from the mean)
 outliers <- lapply(newdata_copy[numeric_vars], function(x) {
@@ -269,17 +283,7 @@ for (var in outlier_columns) {
   }
 }
 
-# Verify the results after handling outliers
-for (var in outlier_columns) {
-  if (!(var %in% c("RAINC", "RAINNC"))) {
-    print(
-      ggplot(data1_clean, aes_string(x = var)) +
-        geom_histogram(bins = 30, color = "black", fill = "lightblue") +
-        labs(title = paste("Cleaned Distribution of", var), x = var, y = "Frequency") +
-        theme_bw()
-    )
-  }
-}
+
 
 # Daytime vs. Nighttime Pressure (PSFC) Analysis
 data_df <- data1_clean
